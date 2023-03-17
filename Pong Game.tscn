@@ -1,0 +1,173 @@
+[gd_scene load_steps=18 format=3 uid="uid://dpdg07ognoo65"]
+
+[ext_resource type="Script" path="res://Game.cs" id="1_oxu8y"]
+[ext_resource type="Script" path="res://Player.cs" id="1_p52rn"]
+[ext_resource type="Script" path="res://Ball.cs" id="2_86yne"]
+[ext_resource type="AudioStream" uid="uid://c2wj4is4ketkg" path="res://Sound/Ludum Dare 38 - Track 4.wav" id="3_rwgj3"]
+[ext_resource type="Texture2D" uid="uid://dw8miuxnhuq2c" path="res://Images/purple_bkg.png" id="3_yl66v"]
+[ext_resource type="AudioStream" uid="uid://blbri7qdij211" path="res://Sound/paddle_hit.wav" id="5_7bufj"]
+[ext_resource type="Script" path="res://AI.cs" id="5_30ef8"]
+[ext_resource type="Theme" uid="uid://d2m5j6j0x8551" path="res://theme.tres" id="5_flrs1"]
+[ext_resource type="Script" path="res://FPSCounter.cs" id="7_blhj6"]
+[ext_resource type="Texture2D" uid="uid://cjydeceixyaui" path="res://Images/2d_lights_and_shadows_neutral_point_light.webp" id="7_ua1ef"]
+[ext_resource type="AudioStream" uid="uid://bubjpko751wf7" path="res://Sound/mutantdie.wav" id="9_s8csb"]
+
+[sub_resource type="Environment" id="Environment_6j5cg"]
+background_mode = 3
+background_color = Color(0, 0.439216, 0.423529, 1)
+tonemap_mode = 3
+glow_enabled = true
+glow_strength = 1.04
+glow_bloom = 0.08
+glow_blend_mode = 1
+glow_hdr_threshold = 0.31
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7icjh"]
+size = Vector2(16.9103, 101.509)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_sold3"]
+polygon = PackedVector2Array(0, 0, 0, 102, 16, 102, 17, 0)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_apwrg"]
+size = Vector2(17, 17)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_np0nu"]
+size = Vector2(1235, 36)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hniai"]
+size = Vector2(157, 644.5)
+
+[node name="Pong Game" type="Node2D"]
+script = ExtResource("1_oxu8y")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_6j5cg")
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_rwgj3")
+volume_db = -25.0
+autoplay = true
+
+[node name="Background" type="Sprite2D" parent="."]
+texture_repeat = 2
+position = Vector2(576, 324)
+texture = ExtResource("3_yl66v")
+region_enabled = true
+region_rect = Rect2(0, 0, 1152, 648)
+
+[node name="Player Paddle" type="CharacterBody2D" parent="."]
+position = Vector2(40, 264)
+script = ExtResource("1_p52rn")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player Paddle"]
+position = Vector2(8, 51)
+shape = SubResource("RectangleShape2D_7icjh")
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Player Paddle"]
+occluder = SubResource("OccluderPolygon2D_sold3")
+
+[node name="Polygon2D" type="Polygon2D" parent="Player Paddle"]
+scale = Vector2(1.04626, 1.58263)
+color = Color(0.133333, 0.682353, 0.921569, 1)
+polygon = PackedVector2Array(0, 0, 0, 64, 16, 64, 16, 0)
+
+[node name="Death Audio" type="AudioStreamPlayer2D" parent="Player Paddle"]
+stream = ExtResource("9_s8csb")
+
+[node name="Ball" type="CharacterBody2D" parent="."]
+position = Vector2(570, 324)
+script = ExtResource("2_86yne")
+
+[node name="Polygon2D" type="Polygon2D" parent="Ball"]
+scale = Vector2(1.21429, 1.54545)
+polygon = PackedVector2Array(-7, -6, -7, 5, -0.411774, 4.99998, 7, 5, 7, -6)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ball"]
+shape = SubResource("RectangleShape2D_apwrg")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="Ball"]
+stream = ExtResource("5_7bufj")
+
+[node name="PointLight2D" type="PointLight2D" parent="Ball"]
+position = Vector2(0, -1)
+scale = Vector2(1.65601, 1.65601)
+color = Color(0.933333, 0.882353, 0.972549, 1)
+shadow_enabled = true
+shadow_color = Color(0, 0, 0, 1)
+shadow_filter = 1
+texture = ExtResource("7_ua1ef")
+
+[node name="Top Boundary" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Top Boundary"]
+position = Vector2(567, -19)
+shape = SubResource("RectangleShape2D_np0nu")
+
+[node name="Botton Boundary" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Botton Boundary"]
+position = Vector2(574.5, 666)
+shape = SubResource("RectangleShape2D_np0nu")
+
+[node name="AI Paddle" type="CharacterBody2D" parent="."]
+position = Vector2(1096, 264)
+script = ExtResource("5_30ef8")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AI Paddle"]
+position = Vector2(8, 51)
+shape = SubResource("RectangleShape2D_7icjh")
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="AI Paddle"]
+occluder = SubResource("OccluderPolygon2D_sold3")
+
+[node name="Polygon2D" type="Polygon2D" parent="AI Paddle"]
+scale = Vector2(1.04626, 1.58263)
+color = Color(0.921569, 0.392157, 0.145098, 1)
+polygon = PackedVector2Array(0, 0, 0, 64, 16, 64, 16, 0)
+
+[node name="Death Audio" type="AudioStreamPlayer2D" parent="AI Paddle"]
+stream = ExtResource("9_s8csb")
+
+[node name="Current Score" type="RichTextLabel" parent="."]
+offset_left = 514.0
+offset_top = 11.0
+offset_right = 624.0
+offset_bottom = 51.0
+theme = ExtResource("5_flrs1")
+text = "Current Score"
+
+[node name="Player 1 Score" type="RichTextLabel" parent="."]
+offset_left = 317.0
+offset_top = 14.0
+offset_right = 372.0
+offset_bottom = 38.0
+bbcode_enabled = true
+text = "[center]0[/center]"
+
+[node name="Player 2 Score" type="RichTextLabel" parent="."]
+offset_left = 780.0
+offset_top = 14.0
+offset_right = 851.0
+offset_bottom = 38.0
+bbcode_enabled = true
+text = "[center]0[/center]"
+
+[node name="Left Boundary" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Left Boundary"]
+position = Vector2(-79.5, 323.5)
+shape = SubResource("RectangleShape2D_hniai")
+
+[node name="Right Boundary" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Right Boundary"]
+position = Vector2(1233, 324.25)
+shape = SubResource("RectangleShape2D_hniai")
+
+[node name="FPS Counter" type="RichTextLabel" parent="."]
+offset_right = 134.0
+offset_bottom = 46.0
+script = ExtResource("7_blhj6")
+
+[connection signal="body_entered" from="Left Boundary" to="." method="_on_left_boundary_body_entered"]
+[connection signal="body_entered" from="Right Boundary" to="." method="_on_right_boundary_body_entered"]

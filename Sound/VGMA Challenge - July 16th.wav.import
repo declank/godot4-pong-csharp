@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://c3730h4j5ev2t"
+path="res://.godot/imported/VGMA Challenge - July 16th.wav-837783c9d6807873d24b092cabf073c5.sample"
+
+[deps]
+
+source_file="res://Sound/VGMA Challenge - July 16th.wav"
+dest_files=["res://.godot/imported/VGMA Challenge - July 16th.wav-837783c9d6807873d24b092cabf073c5.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=2
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

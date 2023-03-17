@@ -1,0 +1,6 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://d2m5j6j0x8551"]
+
+[sub_resource type="FontVariation" id="FontVariation_hneyj"]
+
+[resource]
+RichTextLabel/fonts/normal_font = SubResource("FontVariation_hneyj")

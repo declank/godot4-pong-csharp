@@ -1,0 +1,13 @@
+Countdown timer
+Impact sound
+Lighting
+Fix velocity on reset/random
+Title screen
+UPnP Multiplayer
+Easy code representation of host info
+
+a-z except l,o
+0-9 except 0,1
+
+Low priority:
+Controller support
