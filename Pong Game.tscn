@@ -1,10 +1,11 @@
-[gd_scene load_steps=18 format=3 uid="uid://dpdg07ognoo65"]
+[gd_scene load_steps=20 format=3 uid="uid://dpdg07ognoo65"]
 
 [ext_resource type="Script" path="res://Game.cs" id="1_oxu8y"]
 [ext_resource type="Script" path="res://Player.cs" id="1_p52rn"]
 [ext_resource type="Script" path="res://Ball.cs" id="2_86yne"]
 [ext_resource type="AudioStream" uid="uid://c2wj4is4ketkg" path="res://Sound/Ludum Dare 38 - Track 4.wav" id="3_rwgj3"]
 [ext_resource type="Texture2D" uid="uid://dw8miuxnhuq2c" path="res://Images/purple_bkg.png" id="3_yl66v"]
+[ext_resource type="Script" path="res://Pause.cs" id="4_7vt2g"]
 [ext_resource type="AudioStream" uid="uid://blbri7qdij211" path="res://Sound/paddle_hit.wav" id="5_7bufj"]
 [ext_resource type="Script" path="res://AI.cs" id="5_30ef8"]
 [ext_resource type="Theme" uid="uid://d2m5j6j0x8551" path="res://theme.tres" id="5_flrs1"]
@@ -36,6 +37,9 @@ size = Vector2(1235, 36)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hniai"]
 size = Vector2(157, 644.5)
+
+[sub_resource type="LabelSettings" id="LabelSettings_nnt5x"]
+font_size = 32
 
 [node name="Pong Game" type="Node2D"]
 script = ExtResource("1_oxu8y")
@@ -167,7 +171,62 @@ shape = SubResource("RectangleShape2D_hniai")
 [node name="FPS Counter" type="RichTextLabel" parent="."]
 offset_right = 134.0
 offset_bottom = 46.0
+text = "<FPS Counter>"
 script = ExtResource("7_blhj6")
+
+[node name="Pause Panel" type="Panel" parent="."]
+process_mode = 3
+offset_right = 1151.0
+offset_bottom = 646.0
+script = ExtResource("4_7vt2g")
+
+[node name="Label" type="Label" parent="Pause Panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -58.5
+offset_top = 75.0
+offset_right = 54.5
+offset_bottom = 123.0
+grow_horizontal = 2
+text = "Paused"
+label_settings = SubResource("LabelSettings_nnt5x")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Pause Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Continue" type="Button" parent="Pause Panel/VBoxContainer"]
+layout_mode = 2
+text = "Continue
+"
+
+[node name="Options" type="Button" parent="Pause Panel/VBoxContainer"]
+visible = false
+layout_mode = 2
+text = "Options
+"
+
+[node name="Quit Game" type="MenuButton" parent="Pause Panel/VBoxContainer"]
+layout_mode = 2
+text = "Quit Game"
+item_count = 2
+popup/item_0/text = "Yes"
+popup/item_0/id = 0
+popup/item_1/text = "No"
+popup/item_1/id = 1
 
 [connection signal="body_entered" from="Left Boundary" to="." method="_on_left_boundary_body_entered"]
 [connection signal="body_entered" from="Right Boundary" to="." method="_on_right_boundary_body_entered"]
+[connection signal="pressed" from="Pause Panel/VBoxContainer/Continue" to="Pause Panel" method="_on_continue_pressed"]

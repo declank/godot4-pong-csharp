@@ -6,7 +6,7 @@ public partial class Ball : CharacterBody2D
 	[Export]
 	public int InitialSpeed = 500;
 	[Export]
-	public float SpeedIncreasePerPaddleHit = 1.05f;
+	public float SpeedIncreasePerPaddleHit = 1.09f;
 	[Export]
 	public CollisionShape2D Top;
 	[Export]

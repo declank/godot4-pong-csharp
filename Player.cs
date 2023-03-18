@@ -21,6 +21,7 @@ public partial class Player : CharacterBody2D
 
 	public override void _Process(double delta)
 	{
+		// TODO Controller support
 		/*var velocity = Vector2.Zero;
 		
 		if (Input.IsActionPressed("move_up")) 
