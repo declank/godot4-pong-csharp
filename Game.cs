@@ -6,27 +6,98 @@ public partial class Game : Node2D
 	public int Player1Score = 0;
 	public int Player2Score = 0;
 
-	private CharacterBody2D Ball;
-	private RichTextLabel P1Label, P2Label;
-	private AudioStreamPlayer2D P1DeathAudio, P2DeathAudio;
-	private CharacterBody2D P1Paddle, P2Paddle;
+	[Export] public CharacterBody2D Ball { get; set; }
+	[Export] public RichTextLabel P1Label { get; set; }
+	[Export] public RichTextLabel P2Label { get; set; }
+	[Export] public AudioStreamPlayer2D P1DeathAudio { get; set; }
+	[Export] public AudioStreamPlayer2D P2DeathAudio { get; set; }
+	[Export] public CharacterBody2D P1Paddle { get; set; }
+	[Export] public CharacterBody2D P2Paddle { get; set; }
+	[Export] public AudioStreamPlayer2D CountdownSound { get; set; }
+	
 	private float InitialP1X, InitialP2X;
+
+	private bool P1Updated, P2Updated;
 
 	public override void _Ready()
 	{
-		Ball = GetNode<CharacterBody2D>("Ball");
-		P1Label = GetNode<RichTextLabel>("Player 1 Score");
-		P2Label = GetNode<RichTextLabel>("Player 2 Score");
-		P1DeathAudio = GetNode<AudioStreamPlayer2D>("Player Paddle/Death Audio");
-		P2DeathAudio = GetNode<AudioStreamPlayer2D>("AI Paddle/Death Audio");
-		P1Paddle = GetNode<CharacterBody2D>("Player Paddle");
-		P2Paddle = GetNode<CharacterBody2D>("AI Paddle");
 		InitialP1X = P1Paddle.Position.X;
 		InitialP2X = P2Paddle.Position.X;
 
 		Input.MouseMode = Input.MouseModeEnum.ConfinedHidden;
+
+		if (Globals.SinglePlayer)
+		{
+			P1Paddle = AttachPlayerScript(P1Paddle); // NB: You cannot pass property by ref so return value needed as original object disposed
+			P2Paddle = AttachAIScript(P2Paddle);
+		}
+		else
+		{
+			P1Paddle = AttachPlayerScript(P1Paddle);
+			P2Paddle = AttachPlayerScript(P2Paddle);
+			if (Multiplayer.IsServer())
+			{
+				P2Paddle.SetMultiplayerAuthority(Multiplayer.GetPeers()[0]);
+			}
+			else
+			{
+				P2Paddle.SetMultiplayerAuthority(Multiplayer.GetUniqueId());
+			}
+
+			// Pause game until audio countdown timer is done
+			GetTree().Paused = true;
+			CountdownSound.Play();
+		}
+
+
 	}
 
+	private void _on_countdown_timer_timeout()
+	{
+		if (!Globals.SinglePlayer)
+		{
+			GetTree().Paused = false;
+		}
+	}
+
+	[Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+	private void UpdateP1Paddle(CharacterBody2D paddle)
+	{
+		//P1Paddle.id
+		P1Paddle = paddle;
+		P1Updated = true;
+		GD.Print("P1 Paddle Updated");
+	}
+
+	[Rpc(TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+	private void UpdateP2Paddle(CharacterBody2D paddle)
+	{
+		P2Paddle = paddle;
+		P2Updated = true;
+		GD.Print("P2 Paddle Updated");
+	}
+
+	private CharacterBody2D AttachPlayerScript(CharacterBody2D paddle)
+	{
+		var id = paddle.GetInstanceId();
+		paddle.SetScript(ResourceLoader.Load("res://Player.cs"));
+		paddle = InstanceFromId(id) as CharacterBody2D;
+		paddle.SetProcessInput(true);
+		paddle._Ready();
+		return paddle;
+	}
+
+	private CharacterBody2D AttachAIScript(CharacterBody2D paddle)
+	{
+		var id = paddle.GetInstanceId();
+		paddle.SetScript(ResourceLoader.Load("res://AI.cs"));
+		paddle = InstanceFromId(id) as CharacterBody2D;
+		paddle.SetProcess(true);
+		paddle._Ready();
+		return paddle;
+	}
+
+	
 	private void ResetPaddleX()
 	{
 		P1Paddle.Position = new()
@@ -42,39 +113,56 @@ public partial class Game : Node2D
 		};
 	}
 
-	private void _on_left_boundary_body_entered(Node2D body)
+	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+	public void LeftBoundryRPC()
 	{
-		if (body is Ball)
-		{
-			(Ball as Ball).ResetPosAndVelocity();
+		(Ball as Ball).ResetPosAndVelocity();
 
-			Player2Score += 1;
-			P2Label.Text = "[center]" + Player2Score.ToString() + "[/center]";
+		Player2Score += 1;
+		P2Label.Text = "[center]" + Player2Score.ToString() + "[/center]";
 
-			P1DeathAudio.Play();
+		P1DeathAudio.Play();
 
-			// TODO some strange bug where the edge of paddle is hit and moves X position - this workaround may fix
-			ResetPaddleX();
-		}
-
+		// BUG some strange bug where the edge of paddle is hit and moves X position - this workaround may fix
+		ResetPaddleX();
 	}
 
+	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+	public void RightBoundryRPC()
+	{
+		(Ball as Ball).ResetPosAndVelocity();
+
+		Player1Score += 1;
+		P1Label.Text = "[center]" + Player1Score.ToString() + "[/center]";
+
+		P2DeathAudio.Play();
+
+		// BUG some strange bug where the edge of paddle is hit and moves X position - this workaround may fix
+		ResetPaddleX();
+	}
+
+	private void _on_left_boundary_body_entered(Node2D body)
+	{
+		//GD.Print("Authority: " + IsMultiplayerAuthority());
+		if (body is Ball && IsMultiplayerAuthority())
+		{
+			Rpc("LeftBoundryRPC");
+		}
+	}
+
+	
 	private void _on_right_boundary_body_entered(Node2D body)
 	{
-		if (body is Ball)
+		//GD.Print("Authority: " + IsMultiplayerAuthority());
+		if (body is Ball && !IsMultiplayerAuthority())
 		{
-			(Ball as Ball).ResetPosAndVelocity();
-
-			Player1Score += 1;
-			P1Label.Text = "[center]" + Player1Score.ToString() + "[/center]";
-
-			P2DeathAudio.Play();
-
-			// TODO some strange bug where the edge of paddle is hit and moves X position - this workaround may fix
-			ResetPaddleX();
+			Rpc("RightBoundryRPC");
 		}
 	}
 }
+
+
+
 
 
 

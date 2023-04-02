@@ -11,18 +11,23 @@ config_version=5
 [application]
 
 config/name="Pong"
-run/main_scene="res://Pong Game.tscn"
+run/main_scene="res://Main Menu.tscn"
 config/features=PackedStringArray("4.0", "C#", "Mobile")
 boot_splash/show_image=false
 config/icon="res://icon.svg"
 
 [display]
 
+window/vsync/vsync_mode=0
 window/stretch/mode="canvas_items"
 
 [dotnet]
 
 project/assembly_name="Pong"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gif-importer/plugin.cfg")
 
 [input]
 

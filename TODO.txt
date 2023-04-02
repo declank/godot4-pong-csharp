@@ -5,9 +5,26 @@ Fix velocity on reset/random
 Title screen
 UPnP Multiplayer
 Easy code representation of host info
+Increase angle of bounce based off distance from center of paddle?
+Hide mouse when active
+Pause menu
+
+
 
 a-z except l,o
 0-9 except 0,1
 
 Low priority:
 Controller support
+
+
+
+Attribution:
+mutantdie.wav 
+https://opengameart.org/content/mutant-death
+
+ping-pong-sample-23500.mp3
+Pixabay
+
+robotic-countdown-43935.mp3
+Sound Effect from <a href="https://pixabay.com/sound-effects/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=43935">Pixabay</a>

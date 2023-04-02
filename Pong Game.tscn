@@ -1,13 +1,12 @@
-[gd_scene load_steps=20 format=3 uid="uid://dpdg07ognoo65"]
+[gd_scene load_steps=19 format=3 uid="uid://dpdg07ognoo65"]
 
 [ext_resource type="Script" path="res://Game.cs" id="1_oxu8y"]
-[ext_resource type="Script" path="res://Player.cs" id="1_p52rn"]
 [ext_resource type="Script" path="res://Ball.cs" id="2_86yne"]
+[ext_resource type="AudioStream" uid="uid://codfoggc0goik" path="res://Sound/robotic-countdown-43935.mp3" id="3_ktu55"]
 [ext_resource type="AudioStream" uid="uid://c2wj4is4ketkg" path="res://Sound/Ludum Dare 38 - Track 4.wav" id="3_rwgj3"]
 [ext_resource type="Texture2D" uid="uid://dw8miuxnhuq2c" path="res://Images/purple_bkg.png" id="3_yl66v"]
 [ext_resource type="Script" path="res://Pause.cs" id="4_7vt2g"]
 [ext_resource type="AudioStream" uid="uid://blbri7qdij211" path="res://Sound/paddle_hit.wav" id="5_7bufj"]
-[ext_resource type="Script" path="res://AI.cs" id="5_30ef8"]
 [ext_resource type="Theme" uid="uid://d2m5j6j0x8551" path="res://theme.tres" id="5_flrs1"]
 [ext_resource type="Script" path="res://FPSCounter.cs" id="7_blhj6"]
 [ext_resource type="Texture2D" uid="uid://cjydeceixyaui" path="res://Images/2d_lights_and_shadows_neutral_point_light.webp" id="7_ua1ef"]
@@ -41,8 +40,16 @@ size = Vector2(157, 644.5)
 [sub_resource type="LabelSettings" id="LabelSettings_nnt5x"]
 font_size = 32
 
-[node name="Pong Game" type="Node2D"]
+[node name="Pong Game" type="Node2D" node_paths=PackedStringArray("Ball", "P1Label", "P2Label", "P1DeathAudio", "P2DeathAudio", "P1Paddle", "P2Paddle", "CountdownSound")]
 script = ExtResource("1_oxu8y")
+Ball = NodePath("Ball")
+P1Label = NodePath("Player 1 Score")
+P2Label = NodePath("Player 2 Score")
+P1DeathAudio = NodePath("Player 1 Paddle/Death Audio")
+P2DeathAudio = NodePath("Player 2 Paddle/Death Audio")
+P1Paddle = NodePath("Player 1 Paddle")
+P2Paddle = NodePath("Player 2 Paddle")
+CountdownSound = NodePath("Countdown Sound")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_6j5cg")
@@ -52,6 +59,16 @@ stream = ExtResource("3_rwgj3")
 volume_db = -25.0
 autoplay = true
 
+[node name="Countdown Sound" type="AudioStreamPlayer2D" parent="."]
+process_mode = 3
+stream = ExtResource("3_ktu55")
+
+[node name="Timer" type="Timer" parent="Countdown Sound"]
+process_mode = 3
+wait_time = 3.0
+one_shot = true
+autostart = true
+
 [node name="Background" type="Sprite2D" parent="."]
 texture_repeat = 2
 position = Vector2(576, 324)
@@ -59,23 +76,40 @@ texture = ExtResource("3_yl66v")
 region_enabled = true
 region_rect = Rect2(0, 0, 1152, 648)
 
-[node name="Player Paddle" type="CharacterBody2D" parent="."]
+[node name="Player 1 Paddle" type="CharacterBody2D" parent="."]
 position = Vector2(40, 264)
-script = ExtResource("1_p52rn")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player Paddle"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player 1 Paddle"]
 position = Vector2(8, 51)
 shape = SubResource("RectangleShape2D_7icjh")
 
-[node name="LightOccluder2D" type="LightOccluder2D" parent="Player Paddle"]
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Player 1 Paddle"]
 occluder = SubResource("OccluderPolygon2D_sold3")
 
-[node name="Polygon2D" type="Polygon2D" parent="Player Paddle"]
+[node name="Polygon2D" type="Polygon2D" parent="Player 1 Paddle"]
 scale = Vector2(1.04626, 1.58263)
 color = Color(0.133333, 0.682353, 0.921569, 1)
 polygon = PackedVector2Array(0, 0, 0, 64, 16, 64, 16, 0)
 
-[node name="Death Audio" type="AudioStreamPlayer2D" parent="Player Paddle"]
+[node name="Death Audio" type="AudioStreamPlayer2D" parent="Player 1 Paddle"]
+stream = ExtResource("9_s8csb")
+
+[node name="Player 2 Paddle" type="CharacterBody2D" parent="."]
+position = Vector2(1096, 264)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player 2 Paddle"]
+position = Vector2(8, 51)
+shape = SubResource("RectangleShape2D_7icjh")
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Player 2 Paddle"]
+occluder = SubResource("OccluderPolygon2D_sold3")
+
+[node name="Polygon2D" type="Polygon2D" parent="Player 2 Paddle"]
+scale = Vector2(1.04626, 1.58263)
+color = Color(0.921569, 0.392157, 0.145098, 1)
+polygon = PackedVector2Array(0, 0, 0, 64, 16, 64, 16, 0)
+
+[node name="Death Audio" type="AudioStreamPlayer2D" parent="Player 2 Paddle"]
 stream = ExtResource("9_s8csb")
 
 [node name="Ball" type="CharacterBody2D" parent="."]
@@ -112,25 +146,6 @@ shape = SubResource("RectangleShape2D_np0nu")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Botton Boundary"]
 position = Vector2(574.5, 666)
 shape = SubResource("RectangleShape2D_np0nu")
-
-[node name="AI Paddle" type="CharacterBody2D" parent="."]
-position = Vector2(1096, 264)
-script = ExtResource("5_30ef8")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="AI Paddle"]
-position = Vector2(8, 51)
-shape = SubResource("RectangleShape2D_7icjh")
-
-[node name="LightOccluder2D" type="LightOccluder2D" parent="AI Paddle"]
-occluder = SubResource("OccluderPolygon2D_sold3")
-
-[node name="Polygon2D" type="Polygon2D" parent="AI Paddle"]
-scale = Vector2(1.04626, 1.58263)
-color = Color(0.921569, 0.392157, 0.145098, 1)
-polygon = PackedVector2Array(0, 0, 0, 64, 16, 64, 16, 0)
-
-[node name="Death Audio" type="AudioStreamPlayer2D" parent="AI Paddle"]
-stream = ExtResource("9_s8csb")
 
 [node name="Current Score" type="RichTextLabel" parent="."]
 offset_left = 514.0
@@ -176,6 +191,7 @@ script = ExtResource("7_blhj6")
 
 [node name="Pause Panel" type="Panel" parent="."]
 process_mode = 3
+visible = false
 offset_right = 1151.0
 offset_bottom = 646.0
 script = ExtResource("4_7vt2g")
@@ -218,6 +234,15 @@ layout_mode = 2
 text = "Options
 "
 
+[node name="Return To Main Menu" type="MenuButton" parent="Pause Panel/VBoxContainer"]
+layout_mode = 2
+text = "Return To Main Menu"
+item_count = 2
+popup/item_0/text = "Yes"
+popup/item_0/id = 0
+popup/item_1/text = "No"
+popup/item_1/id = 1
+
 [node name="Quit Game" type="MenuButton" parent="Pause Panel/VBoxContainer"]
 layout_mode = 2
 text = "Quit Game"
@@ -227,6 +252,7 @@ popup/item_0/id = 0
 popup/item_1/text = "No"
 popup/item_1/id = 1
 
+[connection signal="timeout" from="Countdown Sound/Timer" to="." method="_on_countdown_timer_timeout"]
 [connection signal="body_entered" from="Left Boundary" to="." method="_on_left_boundary_body_entered"]
 [connection signal="body_entered" from="Right Boundary" to="." method="_on_right_boundary_body_entered"]
 [connection signal="pressed" from="Pause Panel/VBoxContainer/Continue" to="Pause Panel" method="_on_continue_pressed"]

@@ -1,0 +1,311 @@
+[gd_scene load_steps=9 format=3 uid="uid://b25wi3x3tjuwt"]
+
+[ext_resource type="Script" path="res://MainMenu.cs" id="1_jwcqt"]
+[ext_resource type="Texture2D" uid="uid://dw8miuxnhuq2c" path="res://Images/purple_bkg.png" id="1_ofoa2"]
+[ext_resource type="AudioStream" uid="uid://ycae0o66ymqe" path="res://Sound/ping-pong-sample-23500.mp3" id="2_qaf76"]
+[ext_resource type="Script" path="res://HostGameSetup.cs" id="4_x4heh"]
+[ext_resource type="Script" path="res://JoinGameSetup.cs" id="5_fp5p1"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_orgjf"]
+font_size = 48
+
+[sub_resource type="LabelSettings" id="LabelSettings_qjgnj"]
+font_color = Color(1, 0.513726, 0.956863, 1)
+
+[sub_resource type="AnimatedTexture" id="AnimatedTexture_kwwya"]
+
+[node name="Main Menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_jwcqt")
+
+[node name="Background" type="Sprite2D" parent="."]
+texture_repeat = 2
+position = Vector2(576, 324)
+texture = ExtResource("1_ofoa2")
+region_enabled = true
+region_rect = Rect2(0, 0, 1152, 648)
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_top = 100.0
+offset_right = 20.0
+offset_bottom = 123.0
+grow_horizontal = 2
+text = "PONG"
+label_settings = SubResource("LabelSettings_orgjf")
+
+[node name="Label2" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_top = 100.0
+offset_right = 20.0
+offset_bottom = 123.0
+grow_horizontal = 2
+rotation = -0.0698132
+text = "(plz don't come for me Ataree)"
+label_settings = SubResource("LabelSettings_qjgnj")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_qaf76")
+autoplay = true
+
+[node name="Main Menu" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -53.5
+offset_top = -33.0
+offset_right = 53.5
+offset_bottom = 33.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Single Player" type="Button" parent="Main Menu"]
+layout_mode = 2
+text = "Single Player
+"
+
+[node name="Multiplayer" type="MenuButton" parent="Main Menu"]
+layout_mode = 2
+text = "Multiplayer"
+item_count = 2
+popup/item_0/text = "Host"
+popup/item_0/id = 0
+popup/item_1/text = "Join"
+popup/item_1/id = 1
+
+[node name="Options" type="Button" parent="Main Menu"]
+visible = false
+layout_mode = 2
+text = "Options"
+
+[node name="Quit Game" type="Button" parent="Main Menu"]
+layout_mode = 2
+text = "Quit Game"
+
+[node name="Host Game UI" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_x4heh")
+
+[node name="Waiting On UPnP" type="Control" parent="Host Game UI"]
+visible = false
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Host Game UI/Waiting On UPnP"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -131.0
+offset_top = -13.0
+offset_right = 131.0
+offset_bottom = 13.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Getting Available Port Using UPnP"
+
+[node name="TextureRect" type="TextureRect" parent="Host Game UI/Waiting On UPnP"]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 40.0
+grow_horizontal = 2
+texture = SubResource("AnimatedTexture_kwwya")
+
+[node name="ProgressBar" type="ProgressBar" parent="Host Game UI/Waiting On UPnP"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -197.0
+offset_top = 39.0
+offset_right = 203.0
+offset_bottom = 66.0
+grow_horizontal = 2
+grow_vertical = 2
+show_percentage = false
+
+[node name="Host Game Details" type="Control" parent="Host Game UI"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Host Game UI/Host Game Details"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -325.0
+offset_top = -65.0
+offset_right = -71.0
+offset_bottom = -10.0
+grow_horizontal = 2
+bbcode_enabled = true
+text = "[center]IP Address and Port
+(Give This To The Player Joining)[/center]"
+
+[node name="IP Address Display" type="LineEdit" parent="Host Game UI/Host Game Details"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -299.0
+offset_top = 2.0
+offset_right = -99.0
+offset_bottom = 33.0
+grow_horizontal = 2
+alignment = 1
+editable = false
+
+[node name="RichTextLabel2" type="RichTextLabel" parent="Host Game UI/Host Game Details"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -325.0
+offset_top = 72.0
+offset_right = -71.0
+offset_bottom = 113.0
+grow_horizontal = 2
+bbcode_enabled = true
+text = "[center]Enter Your Player Name Below[/center]"
+
+[node name="Player Name" type="LineEdit" parent="Host Game UI/Host Game Details"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -299.0
+offset_top = 112.0
+offset_right = -99.0
+offset_bottom = 143.0
+grow_horizontal = 2
+alignment = 1
+
+[node name="RichTextLabel3" type="RichTextLabel" parent="Host Game UI/Host Game Details"]
+layout_mode = 0
+offset_left = 168.0
+offset_top = -64.0
+offset_right = 462.0
+offset_bottom = -24.0
+bbcode_enabled = true
+text = "[center]No Player Has Joined Yet...[/center]"
+
+[node name="HTTPRequest" type="HTTPRequest" parent="Host Game UI/Host Game Details"]
+
+[node name="Button" type="Button" parent="Host Game UI/Host Game Details"]
+visible = false
+layout_mode = 0
+offset_left = 297.0
+offset_top = 44.0
+offset_right = 330.0
+offset_bottom = 75.0
+text = "GO"
+
+[node name="Join Game UI" type="VBoxContainer" parent="." node_paths=PackedStringArray("PlayerName", "IPPortToJoin", "JoinButton")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -202.0
+offset_top = -82.0
+offset_right = 247.0
+offset_bottom = 255.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_fp5p1")
+PlayerName = NodePath("Enter Join Details/Player Name")
+IPPortToJoin = NodePath("Enter Join Details/IP Address")
+JoinButton = NodePath("Enter Join Details/Join Button")
+
+[node name="Enter Join Details" type="Control" parent="Join Game UI"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Join Game UI/Enter Join Details"]
+clip_contents = false
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+offset_left = -24.0
+offset_top = 19.0
+offset_right = 425.0
+offset_bottom = 59.0
+bbcode_enabled = true
+text = "[center]IP Address and Port to Join (e.g. 123.45.67.89:4567)[/center]"
+
+[node name="IP Address" type="LineEdit" parent="Join Game UI/Enter Join Details"]
+layout_mode = 2
+offset_left = -24.0
+offset_top = 63.0
+offset_right = 425.0
+offset_bottom = 94.0
+placeholder_text = "127.0.0.1:4567"
+
+[node name="RichTextLabel2" type="RichTextLabel" parent="Join Game UI/Enter Join Details"]
+layout_mode = 2
+offset_left = -23.0
+offset_top = 123.0
+offset_right = 426.0
+offset_bottom = 159.0
+bbcode_enabled = true
+text = "[center]Player Name[/center]"
+
+[node name="Player Name" type="LineEdit" parent="Join Game UI/Enter Join Details"]
+layout_mode = 2
+offset_left = -24.0
+offset_top = 162.0
+offset_right = 425.0
+offset_bottom = 193.0
+
+[node name="Join Button" type="Button" parent="Join Game UI/Enter Join Details"]
+layout_mode = 2
+offset_left = 114.0
+offset_top = 271.0
+offset_right = 289.0
+offset_bottom = 302.0
+size_flags_vertical = 10
+text = "Join"
+
+[node name="Session Joined" type="Control" parent="Join Game UI"]
+layout_mode = 2
+
+[connection signal="pressed" from="Main Menu/Single Player" to="." method="_on_single_player_pressed"]
+[connection signal="pressed" from="Main Menu/Quit Game" to="." method="_on_quit_game_pressed"]
+[connection signal="pressed" from="Join Game UI/Enter Join Details/Join Button" to="Join Game UI" method="_on_join_button_pressed"]

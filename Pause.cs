@@ -9,10 +9,30 @@ public partial class Pause : Panel
 	{
 		Visible = false;
 		InitialFocus = GetNode<Button>("VBoxContainer/Continue");
+
+		var returnToMainMenuButton = GetNode<MenuButton>("VBoxContainer/Return To Main Menu");
+		var returnToMainPopupMenu = returnToMainMenuButton.GetPopup();
+		returnToMainPopupMenu.IndexPressed += (index) => OnReturnMMPopupMenu(index);
+
 		var quitGameMenuButton = GetNode<MenuButton>("VBoxContainer/Quit Game");
 		var quitGamePopupMenu = quitGameMenuButton.GetPopup();
 		quitGamePopupMenu.IndexPressed += (index) => OnQuitPopupMenu(index);
+	}
 
+	private void OnReturnMMPopupMenu(long index)
+	{
+		switch (index)
+		{
+			case 0:
+				GetTree().ChangeSceneToFile("res://Main Menu.tscn");
+				GetTree().Paused = false;
+				break;
+			case 1:
+				// Continue game
+				// BUG Unpausing using the popup signifcantly increases ball velocity?
+				UnpauseGame();
+				break;
+		}
 	}
 
 	private void OnQuitPopupMenu(long index)
@@ -38,7 +58,7 @@ public partial class Pause : Panel
 
 	public override void _Input(InputEvent @event)
 	{
-		if (Input.IsActionJustPressed("pause"))
+		if (Globals.SinglePlayer && Input.IsActionJustPressed("pause"))
 		{
 			if (GetTree().Paused == false)
 			{

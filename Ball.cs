@@ -24,26 +24,43 @@ public partial class Ball : CharacterBody2D
 
 	public void ResetPosAndVelocity()
 	{
+		Rpc("ResetPosAndVelocity", (GD.Randi() % 2) * 2.0f - 1.0f, (GD.Randi() % 2) * 2.0f - 1.0f);
+	}
+
+	[Rpc(CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+	public void ResetPosAndVelocity(float velocityX, float velocityY)
+	{
 		Position = new Vector2(570, 324);
 		Velocity = new()
 		{
-			X = (GD.Randi() % 2) * 2.0f - 1.0f,
-			Y = (GD.Randi() % 2) * 2.0f - 1.0f
+			X = velocityX,
+			Y = velocityY
 		};
 	}
+
+	[Rpc(CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+	private void Bounce(KinematicCollision2D collisionObject)
+	{
+		//if (collisionObject is not null)
+		//{
+			Velocity = Velocity.Bounce(collisionObject.GetNormal());
+		//}
+		if (collisionObject.GetCollider() is CharacterBody2D)
+		{
+			// If ball hits a player or AI paddle, play sound and increase speed
+			Velocity *= SpeedIncreasePerPaddleHit;
+			AudioPlayer.Play();
+		}
+	}
+
 
 	public override void _Process(double delta)
 	{
 		var collisionObject = MoveAndCollide(Velocity * InitialSpeed * (float)delta);
 		if (collisionObject is not null)
 		{
-			Velocity = Velocity.Bounce(collisionObject.GetNormal());
+			Bounce(collisionObject);
 		}
-		if (collisionObject?.GetCollider() is CharacterBody2D)
-		{
-			// If ball hits a player or AI paddle, play sound and increase speed
-			Velocity *= SpeedIncreasePerPaddleHit;
-			AudioPlayer.Play();
-		}	
+		
 	}
 }

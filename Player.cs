@@ -13,40 +13,35 @@ public partial class Player : CharacterBody2D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		GD.Print("Player _Ready");
 		var screenSize = GetViewportRect().Size;
 		HalfPaddleHeight = PaddleHeight / 2.0f;
 		MaxY = screenSize.Y - PaddleHeight;// - HalfPaddleHeight;
-		
 	}
 
-	public override void _Process(double delta)
+	[Rpc(CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Unreliable)]
+	private void SetPosition(Vector2 newPosition)
 	{
-		// TODO Controller support
-		/*var velocity = Vector2.Zero;
-		
-		if (Input.IsActionPressed("move_up")) 
-		{
-			velocity.Y -= 200;
-		}
-		if (Input.IsActionPressed("move_down")) 
-		{
-			velocity.Y += 200;
-		}
-		
-		Position += velocity * (float)delta;
-		Position = new Vector2(
-			x: Position.X,
-			y: Mathf.Clamp(Position.Y, 0, MaxY)
-		);*/
+		Position = newPosition;
 	}
 
 	public override void _Input(InputEvent @event)
 	{
-		if (@event is InputEventMouseMotion mouseMotion)
-		Position = new Vector2(
-			x: Position.X,
-			y: Mathf.Clamp(mouseMotion.Position.Y - HalfPaddleHeight, 0, MaxY)
-		);
+		//GD.Print("Player _Input");
+		//GD.Print(@event.ToString());
+		if (IsMultiplayerAuthority() && @event is InputEventMouseMotion mouseMotion)
+		{
+			//GD.Print("mouseMotion.Position.Y: " + mouseMotion.Position.Y);
+			//GD.Print("HalfPaddleHeight: " + HalfPaddleHeight);
+			//GD.Print("MaxY: " + MaxY);
+			Vector2 newPosition = new Vector2(
+				x: Position.X,
+				y: Mathf.Clamp(mouseMotion.Position.Y - HalfPaddleHeight, 0, MaxY)
+			);
+			//SetPosition(newPosition);
+			Rpc("SetPosition", newPosition);
+		}
+		
 	}
 }
 
